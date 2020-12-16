@@ -19,7 +19,6 @@ char grid[][] = {
 
 void setup() {
   size(800, 800);
-
   firstClick = true;
 
   brook = loadImage("blackRook.png");
@@ -38,10 +37,14 @@ void setup() {
 }
 
 void draw() {
-  drawBoard();
+  strokeWeight(1);
+  stroke(2);
+  drawBoard(); 
+  highlight();
   drawPieces();
-}
+println(firstClick,col1*100,row1*100);
 
+}
 void drawBoard() {
   for (int r = 0; r < 8; r++) {
     for (int c = 0; c < 8; c++) { 
@@ -73,6 +76,16 @@ void drawPieces() {
     }
   }
 }
+
+void highlight(){
+ if (firstClick == false){
+    stroke(0,200,0);
+    strokeWeight(6);
+    rect(col1*100, row1*100, 100, 100);
+ }  
+    
+ }
+
 
 void mouseReleased() {
   if (firstClick) {
