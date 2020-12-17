@@ -21,8 +21,14 @@ char grid[][] = {
   {'r', 'b', 'n', 'q', 'k', 'n', 'b', 'r'}
 };
 
+int go = 1;
+
+boolean zkey;
+
 void setup() {
   size(800, 800);
+  
+  zkey = false; 
   
   myClient = new Client (this, "127.0.0.1",1234);
   
@@ -49,8 +55,22 @@ void draw() {
   drawBoard(); 
   highlight();
   drawPieces();
-println(firstClick,col1*100,row1*100);
+//println(firstClick,col1*100,row1*100);
+receiveMove();
 
+}
+
+void receiveMove(){
+  if ( myClient.available() > 0){
+   String incoming = myClient.readString(); 
+   int r1 = int(incoming.substring(0, 1));
+   int c1 = int(incoming.substring(2 ,3));
+   int r2 = int(incoming.substring(4, 5));
+   int c2 = int(incoming.substring(6, 7));
+   grid [r2][c2] = grid [r1][c1];
+   grid [r1][c1] = ' ';
+   go = 2; //we are receivng the server message; if go is 2 black is able to move
+  }
 }
 void drawBoard() {
   for (int r = 0; r < 8; r++) {
@@ -99,14 +119,26 @@ void mouseReleased() {
   if (firstClick) {
     row1 = mouseY/100;
     col1 = mouseX/100;
-    firstClick = false;
+    if ( grid [row1][col1] == ' ' || go == 1){
+    firstClick = true;
+    } else firstClick = false;
   } else {
     row2 = mouseY/100;
     col2 = mouseX/100;
-    if (!(row2 == row1 && col2 == col1)) {
+    if (!(row2 == row1 && col2 == col1) && go == 2) {
       grid[row2][col2] = grid[row1][col1];
       grid[row1][col1] = ' ';
+      myClient.write(row1 + "," + col1 + "," + row2 + "," + col2);
       firstClick = true;
+      go = 1;
     }
   }
+}
+
+void keyPressed() {
+ if (key == 'z' || key == 'Z') zkey = true; 
+}
+
+void keyReleased(){
+ if (key == 'z' || key == 'Z') zkey = false;  
 }
