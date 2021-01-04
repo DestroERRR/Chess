@@ -8,22 +8,27 @@ PImage wrook, wbishop, wknight, wqueen, wking, wpawn;
 PImage brook, bbishop, bknight, bqueen, bking, bpawn;
 boolean firstClick;
 int row1, col1, row2, col2;
-
+int rowB, colB;
+int promo = 0; 
 
 char grid[][] = {
-  {'R', 'B', 'N', 'Q', 'K', 'N', 'B', 'R'}, 
+  {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
   {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'}, 
   {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, 
   {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, 
   {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, 
   {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, 
   {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'}, 
-  {'r', 'b', 'n', 'q', 'k', 'n', 'b', 'r'}
+  {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'}
 };
 
 int go = 1;
 
 boolean zkey;
+
+char lastpiece;
+
+boolean promote = false; 
 
 void setup() {
   size(800, 800);
@@ -55,9 +60,29 @@ void draw() {
   drawBoard(); 
   highlight();
   drawPieces();
-//println(firstClick,col1*100,row1*100);
-receiveMove();
+  receiveMove();
+  promotion();
+}
 
+void promotion(){
+  
+  if(promote == true){
+    
+       if (promo == 1) grid[row2][col2] = 'Q';
+       if (promo == 2) grid[row2][col2] = 'R';
+       if (promo == 3) grid[row2][col2] = 'B';
+       if (promo == 4) grid[row2][col2] = 'N';
+       promo = 0;
+  } promote = false; 
+  
+  if ('P' == grid[row2][col2]) {
+   if(row2 == 7){ 
+     promote = true;
+    //println("promotion!"); 
+   } 
+  }
+  
+  
 }
 
 void receiveMove(){
@@ -90,10 +115,10 @@ void drawPieces() {
     for (int c = 0; c < 8; c++) {
       if (grid[r][c] == 'r') image (wrook, c*100, r*100, 100, 100);
       if (grid[r][c] == 'R') image (brook, c*100, r*100, 100, 100);
-      if (grid[r][c] == 'b') image (wknight, c*100, r*100, 100, 100);
-      if (grid[r][c] == 'B') image (bknight, c*100, r*100, 100, 100);
-      if (grid[r][c] == 'n') image (wbishop, c*100, r*100, 100, 100);
-      if (grid[r][c] == 'N') image (bbishop, c*100, r*100, 100, 100);
+      if (grid[r][c] == 'n') image (wknight, c*100, r*100, 100, 100);
+      if (grid[r][c] == 'N') image (bknight, c*100, r*100, 100, 100);
+      if (grid[r][c] == 'b') image (wbishop, c*100, r*100, 100, 100);
+      if (grid[r][c] == 'B') image (bbishop, c*100, r*100, 100, 100);
       if (grid[r][c] == 'q') image (wqueen, c*100, r*100, 100, 100);
       if (grid[r][c] == 'Q') image (bqueen, c*100, r*100, 100, 100);
       if (grid[r][c] == 'k') image (wking, c*100, r*100, 100, 100);
@@ -102,6 +127,13 @@ void drawPieces() {
       if (grid[r][c] == 'P') image (bpawn, c*100, r*100, 100, 100);
     }
   }
+}
+
+void takeback() {
+ if (go == 1) {
+  grid[row1][col1] = grid[row2][col2];
+  grid[row2][col2] = lastpiece;
+ }
 }
 
 void highlight(){
@@ -117,8 +149,8 @@ void highlight(){
 
 void mouseReleased() {
   if (firstClick) {
-    row1 = mouseY/100;
-    col1 = mouseX/100;
+    row1 = rowB = mouseY/100;
+    col1 = colB = mouseX/100;
     if ( grid [row1][col1] == ' ' || go == 1){
     firstClick = true;
     } else firstClick = false;
@@ -126,6 +158,7 @@ void mouseReleased() {
     row2 = mouseY/100;
     col2 = mouseX/100;
     if (!(row2 == row1 && col2 == col1) && go == 2) {
+      lastpiece = grid[row2][col2];
       grid[row2][col2] = grid[row1][col1];
       grid[row1][col1] = ' ';
       myClient.write(row1 + "," + col1 + "," + row2 + "," + col2);
@@ -135,10 +168,28 @@ void mouseReleased() {
   }
 }
 
-void keyPressed() {
- if (key == 'z' || key == 'Z') zkey = true; 
-}
 
-void keyReleased(){
- if (key == 'z' || key == 'Z') zkey = false;  
+void keyReleased() {
+ if (key == 'z' || key == 'Z') {
+   takeback();
+   go = 2;
+ }
+ 
+ if (key == 'q' || key == 'Q' && promote == true && go == 1) {
+    promo = 1; //queen
+  } 
+  
+  if (key == 'r' || key == 'R' && promote == true && go == 1) {
+    promo = 2; //rook
+  }
+  
+  if (key == 'b' || key == 'B' && promote == true && go == 1) {
+    promo = 3;  //bishop
+  }
+  
+  if (key == 'n' || key == 'N' && promote == true && go == 1) {
+    promo = 4; //knight 
+  }
+  
+ 
 }

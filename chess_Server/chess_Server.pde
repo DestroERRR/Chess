@@ -10,17 +10,20 @@ PImage brook, bbishop, bknight, bqueen, bking, bpawn;
 boolean firstClick;
 int row1, col1, row2, col2;
 int rowB, colB; //for taking back a move 
+int promo = 0;
+
+
 
 
 char grid[][] = {
-  {'R', 'B', 'N', 'Q', 'K', 'N', 'B', 'R'}, 
+  {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
   {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'}, 
   {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, 
   {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, 
   {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, 
   {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, 
   {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'}, 
-  {'r', 'b', 'n', 'q', 'k', 'n', 'b', 'r'}
+  {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'}
 };
 
 //will need a char variable to store the lastpiecetaken to take back a move
@@ -31,6 +34,8 @@ boolean zkey;
 
 char lastpiece;
 
+boolean promote = false;
+
 void setup() {
   size(800, 800);
 
@@ -39,7 +44,8 @@ void setup() {
   myServer = new Server(this, 1234);
 
   firstClick = true;
-
+  
+  
   brook = loadImage("blackRook.png");
   bbishop = loadImage("blackBishop.png");
   bknight = loadImage("blackKnight.png");
@@ -62,9 +68,32 @@ void draw() {
   highlight();
   drawPieces();
   //println(firstClick,col1*100,row1*100);
-  //println(go);
   receiveMove();
-  println(row1, col1);
+ // println(row1, col1);
+ //println(go);
+  promotion();
+ // println(promo,go);
+}
+
+void promotion(){
+  
+  if(promote == true){
+    
+       if (promo == 1) grid[row2][col2] = 'q';
+       if (promo == 2) grid[row2][col2] = 'r';
+       if (promo == 3) grid[row2][col2] = 'b';
+       if (promo == 4) grid[row2][col2] = 'n';
+       promo = 0;
+  } promote = false; 
+  
+  if ('p' == grid[row2][col2]) {
+   if(row2 == 0){ 
+     promote = true;
+    //println("promotion!"); 
+   } 
+  }
+  
+  
 }
 
 void receiveMove() {
@@ -99,10 +128,10 @@ void drawPieces() {
     for (int c = 0; c < 8; c++) {
       if (grid[r][c] == 'r') image (wrook, c*100, r*100, 100, 100);
       if (grid[r][c] == 'R') image (brook, c*100, r*100, 100, 100);
-      if (grid[r][c] == 'b') image (wknight, c*100, r*100, 100, 100);
-      if (grid[r][c] == 'B') image (bknight, c*100, r*100, 100, 100);
-      if (grid[r][c] == 'n') image (wbishop, c*100, r*100, 100, 100);
-      if (grid[r][c] == 'N') image (bbishop, c*100, r*100, 100, 100);
+      if (grid[r][c] == 'n') image (wknight, c*100, r*100, 100, 100);
+      if (grid[r][c] == 'N') image (bknight, c*100, r*100, 100, 100);
+      if (grid[r][c] == 'b') image (wbishop, c*100, r*100, 100, 100);
+      if (grid[r][c] == 'B') image (bbishop, c*100, r*100, 100, 100);
       if (grid[r][c] == 'q') image (wqueen, c*100, r*100, 100, 100);
       if (grid[r][c] == 'Q') image (bqueen, c*100, r*100, 100, 100);
       if (grid[r][c] == 'k') image (wking, c*100, r*100, 100, 100);
@@ -120,6 +149,7 @@ void takeback() {
   }
 }
 
+
 void highlight() {
   if (firstClick == false ) {
     noFill();
@@ -132,7 +162,6 @@ void highlight() {
 
 void mouseReleased() {
   if (firstClick) {
-
     row1 = rowB = mouseY/100;
     col1 = colB = mouseX/100;
     if (grid[row1][col1] == ' ' || go == 2) { //says if the square is empty then no clicks
@@ -157,5 +186,32 @@ void mouseReleased() {
 //}
 
 void keyReleased() {
-  if (key == 'z' || key == 'Z') takeback();
+  if (key == 'z' || key == 'Z') {
+    takeback();
+    go = 1;
+  }
+  
+  if (key == 'q' || key == 'Q' && promote == true && go == 2) {
+    promo = 1; //queen
+  } 
+  
+  if (key == 'r' || key == 'R' && promote == true && go == 2) {
+    promo = 2; //rook
+  }
+  
+  if (key == 'b' || key == 'B' && promote == true && go == 2) {
+    promo = 3;  //bishop
+  }
+  
+  if (key == 'n' || key == 'N' && promote == true && go == 2) {
+    promo = 4; //knight 
+  }
+  
+}
+
+void options(){
+  fill(0);
+  textSize(40);
+  text("Game is Paused", 250,300);
+  
 }
