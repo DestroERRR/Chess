@@ -73,6 +73,7 @@ void promotion(){
        if (promo == 3) grid[row2][col2] = 'B';
        if (promo == 4) grid[row2][col2] = 'N';
        promo = 0;
+       
   } promote = false; 
   
   if ('P' == grid[row2][col2]) {
@@ -86,15 +87,31 @@ void promotion(){
 }
 
 void receiveMove(){
-  if ( myClient.available() > 0){
+  if (myClient.available() > 0){
    String incoming = myClient.readString(); 
    int r1 = int(incoming.substring(0, 1));
-   int c1 = int(incoming.substring(2 ,3));
+   int c1 = int(incoming.substring(2, 3));
    int r2 = int(incoming.substring(4, 5));
    int c2 = int(incoming.substring(6, 7));
+   int id = int(incoming.substring(8, 9));
+
+   
+   if(id == 0){
    grid [r2][c2] = grid [r1][c1];
    grid [r1][c1] = ' ';
    go = 2; //we are receivng the server message; if go is 2 black is able to move
+   } else if (id == 1 && go == 2) {
+     grid[r1][c1] = grid[r2][c2];
+     grid[r2][c2] = ' ';
+     
+     
+   } else if (id == 2) { 
+     
+   }
+   
+   
+   
+   
   }
 }
 void drawBoard() {
@@ -161,7 +178,7 @@ void mouseReleased() {
       lastpiece = grid[row2][col2];
       grid[row2][col2] = grid[row1][col1];
       grid[row1][col1] = ' ';
-      myClient.write(row1 + "," + col1 + "," + row2 + "," + col2);
+      myClient.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "0");
       firstClick = true;
       go = 1;
     }
@@ -173,6 +190,7 @@ void keyReleased() {
  if (key == 'z' || key == 'Z') {
    takeback();
    go = 2;
+   myClient.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "1");
  }
  
  if (key == 'q' || key == 'Q' && promote == true && go == 1) {

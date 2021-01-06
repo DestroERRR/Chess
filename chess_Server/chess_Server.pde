@@ -84,6 +84,7 @@ void promotion(){
        if (promo == 3) grid[row2][col2] = 'b';
        if (promo == 4) grid[row2][col2] = 'n';
        promo = 0;
+       
   } promote = false; 
   
   if ('p' == grid[row2][col2]) {
@@ -104,9 +105,21 @@ void receiveMove() {
     int c1 = int(incoming.substring(2, 3));
     int r2 = int(incoming.substring(4, 5)); 
     int c2 = int(incoming.substring(6, 7));
+    int id = int(incoming.substring(8, 9));
+   
+    
+   if(id == 0){
     grid[r2][c2] = grid[r1][c1];
     grid[r1][c1] = ' ';
     go = 1;
+   }  else if (id == 1 && go == 1) {
+      grid[r1][c1] = grid[r2][c2];
+      grid[r2][c2] = ' ';
+   }  else if (id == 2) {
+   
+   }
+    
+    
   }
 }
 
@@ -174,7 +187,7 @@ void mouseReleased() {
       lastpiece = grid[row2][col2];
       grid[row2][col2] = grid[row1][col1];
       grid[row1][col1] = ' ';
-      myServer.write(row1 + "," + col1 + "," + row2 + "," + col2);
+      myServer.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "0");
       firstClick = true;
       go = 2;
     }
@@ -189,6 +202,7 @@ void keyReleased() {
   if (key == 'z' || key == 'Z') {
     takeback();
     go = 1;
+    myServer.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "1");
   }
   
   if (key == 'q' || key == 'Q' && promote == true && go == 2) {
