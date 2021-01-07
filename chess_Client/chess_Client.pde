@@ -94,7 +94,7 @@ void receiveMove(){
    int r2 = int(incoming.substring(4, 5));
    int c2 = int(incoming.substring(6, 7));
    int id = int(incoming.substring(8, 9));
-
+   int prom = int(incoming.substring(10,11));
    
    if(id == 0){
    grid [r2][c2] = grid [r1][c1];
@@ -107,12 +107,29 @@ void receiveMove(){
      
    } else if (id == 2) { 
      
+     if(r2 == 0) {
+       
+     if(prom == 1) { 
+       grid[r2][c2] = 'q';
+      // prom = 0;
+     } else if (prom == 2) {
+       grid[r2][c2] = 'r';
+       //prom = 0;
+     } else if (prom == 3) {
+     grid[r2][c2] = 'b';
+     } else if (prom == 4) {
+     grid[r2][c2] = 'n';
+     }
+    prom = 0;
+   }
+   
+   
    }
    
    
    
-   
   }
+  
 }
 void drawBoard() {
   for (int r = 0; r < 8; r++) {
@@ -178,7 +195,7 @@ void mouseReleased() {
       lastpiece = grid[row2][col2];
       grid[row2][col2] = grid[row1][col1];
       grid[row1][col1] = ' ';
-      myClient.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "0");
+      myClient.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "0" + "," + "0");
       firstClick = true;
       go = 1;
     }
@@ -190,23 +207,27 @@ void keyReleased() {
  if (key == 'z' || key == 'Z') {
    takeback();
    go = 2;
-   myClient.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "1");
+   myClient.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "1" + "," + "0");
  }
  
  if (key == 'q' || key == 'Q' && promote == true && go == 1) {
     promo = 1; //queen
+     myClient.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "2" + "," + "1");
   } 
   
   if (key == 'r' || key == 'R' && promote == true && go == 1) {
     promo = 2; //rook
+    myClient.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "2" + "," + "2");
   }
   
   if (key == 'b' || key == 'B' && promote == true && go == 1) {
     promo = 3;  //bishop
+    myClient.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "2" + "," + "3");
   }
   
   if (key == 'n' || key == 'N' && promote == true && go == 1) {
     promo = 4; //knight 
+    myClient.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "2" + "," + "4");
   }
   
  
