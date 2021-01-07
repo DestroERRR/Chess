@@ -109,12 +109,13 @@ void receiveMove() {
     int prom = int(incoming.substring(10,11));
     
    if(id == 0){
+    lastpiece = grid[r2][c2];
     grid[r2][c2] = grid[r1][c1];
     grid[r1][c1] = ' ';
     go = 1;
    }  else if (id == 1 && go == 1) {
       grid[r1][c1] = grid[r2][c2];
-      grid[r2][c2] = ' ';
+      grid[r2][c2] = lastpiece;
    }  else if (id == 2) {
       
      if(r2 == 7) {
