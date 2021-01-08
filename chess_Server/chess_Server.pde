@@ -36,6 +36,8 @@ char lastpiece;
 
 boolean promote = false;
 
+int mode; 
+
 void setup() {
   size(800, 800);
 
@@ -45,6 +47,7 @@ void setup() {
 
   firstClick = true;
   
+  mode = 0; 
   
   brook = loadImage("blackRook.png");
   bbishop = loadImage("blackBishop.png");
@@ -64,6 +67,7 @@ void setup() {
 void draw() {
   strokeWeight(1);
   stroke(2);
+  //promotionOptions();
   drawBoard(); 
   highlight();
   drawPieces();
@@ -73,6 +77,7 @@ void draw() {
  //println(go);
   promotion();
  // println(promo,go);
+ promotionOptions();
 }
 
 void promotion(){
@@ -90,6 +95,7 @@ void promotion(){
   if ('p' == grid[row2][col2]) {
    if(row2 == 0){ 
      promote = true;
+     mode = 1; //for promotion options 
     //println("promotion!"); 
    } 
   }
@@ -225,28 +231,46 @@ void keyReleased() {
   if (key == 'q' || key == 'Q' && promote == true && go == 2) {
     promo = 1; //queen
     myServer.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "2" + "," + "1");
+    mode = 0;
   } 
   
   if (key == 'r' || key == 'R' && promote == true && go == 2) {
     promo = 2; //rook
     myServer.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "2" + "," + "2");
+    mode = 0;
   }
   
   if (key == 'b' || key == 'B' && promote == true && go == 2) {
     promo = 3;  //bishop
     myServer.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "2" + "," + "3");
-  }
+    mode = 0;
+ }
   
   if (key == 'n' || key == 'N' && promote == true && go == 2) {
     promo = 4; //knight 
     myServer.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "2" + "," + "4");
+    mode = 0;
   }
   
 }
 
-void options(){
-  fill(0);
-  textSize(40);
-  text("Game is Paused", 250,300);
+void promotionOptions(){
+  if (mode == 1) {
+    pushMatrix();
+    fill(#FFFFC3,200);
+    rect(100,135,600,400);
+    fill(0);
+    textSize(48);
+    text("Press Q for a QUEEN" ,120,200); 
+    text("Press R for a ROOK" ,120,300);
+    text("Press B for a BISHOP" ,120,400);
+    text("Press N for a KNIGHT" ,120,500);
+    popMatrix();
+ } else if (mode == 0) {
+    
+  }
+  
+  
+  
   
 }

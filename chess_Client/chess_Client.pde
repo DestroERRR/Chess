@@ -30,6 +30,8 @@ char lastpiece;
 
 boolean promote = false; 
 
+int mode; 
+
 void setup() {
   size(800, 800);
   
@@ -38,6 +40,8 @@ void setup() {
   myClient = new Client (this, "127.0.0.1",1234);
   
   firstClick = true;
+  
+  mode = 0;
 
   brook = loadImage("blackRook.png");
   bbishop = loadImage("blackBishop.png");
@@ -62,6 +66,7 @@ void draw() {
   drawPieces();
   receiveMove();
   promotion();
+  promotionOptions();
 }
 
 void promotion(){
@@ -79,7 +84,7 @@ void promotion(){
   if ('P' == grid[row2][col2]) {
    if(row2 == 7){ 
      promote = true;
-    //println("promotion!"); 
+     mode = 1;
    } 
   }
   
@@ -97,13 +102,13 @@ void receiveMove(){
    int prom = int(incoming.substring(10,11));
    
    if(id == 0){
-   lastpiece = grid[r2][c2];
+     lastpiece = grid[r2][c2];
    grid [r2][c2] = grid [r1][c1];
    grid [r1][c1] = ' ';
    go = 2; //we are receivng the server message; if go is 2 black is able to move
    } else if (id == 1 && go == 2) {
-      grid[r1][c1] = grid[r2][c2];
-      grid[r2][c2] = lastpiece;
+     grid[r1][c1] = grid[r2][c2];
+     grid[r2][c2] = lastpiece;
      
      
    } else if (id == 2) { 
@@ -214,22 +219,46 @@ void keyReleased() {
  if (key == 'q' || key == 'Q' && promote == true && go == 1) {
     promo = 1; //queen
      myClient.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "2" + "," + "1");
+     mode = 0;
   } 
   
   if (key == 'r' || key == 'R' && promote == true && go == 1) {
     promo = 2; //rook
     myClient.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "2" + "," + "2");
+    mode = 0;
   }
   
   if (key == 'b' || key == 'B' && promote == true && go == 1) {
     promo = 3;  //bishop
     myClient.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "2" + "," + "3");
+    mode = 0;
   }
   
   if (key == 'n' || key == 'N' && promote == true && go == 1) {
     promo = 4; //knight 
     myClient.write(row1 + "," + col1 + "," + row2 + "," + col2 + "," + "2" + "," + "4");
-  }
+    mode = 0;
+ }
   
  
+}
+
+void promotionOptions(){
+  if (mode == 1) {
+    pushMatrix();
+    fill(#FFFFC3,200);
+    rect(100,135,600,400);
+    fill(0);
+    textSize(48);
+    text("Press Q for a QUEEN" ,120,200); 
+    text("Press R for a ROOK" ,120,300);
+    text("Press B for a BISHOP" ,120,400);
+    text("Press N for a KNIGHT" ,120,500);
+    popMatrix();
+ } else if (mode == 0) {
+    
+  }
+  
+  
+  
 }
